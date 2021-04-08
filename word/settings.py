@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'home',
     'user',
     'check',
+    'note',
     'captcha',
     'django.contrib.admin',
     'django.contrib.auth',
