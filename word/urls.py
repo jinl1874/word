@@ -24,6 +24,7 @@ import user.urls
 import home.urls
 import check.urls
 import user.views
+import note.urls
 
 urlpatterns = [
 
@@ -53,5 +54,8 @@ urlpatterns = [
 
     # 单词检测
     path('check/', include(check.urls)),
+
+    # 笔记
+    path('note/', include(note.urls))
 
 ]

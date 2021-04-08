@@ -1,57 +1,96 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block title %} {{ note.title }} {% endblock title%}
-{% block style %}
-<!-- <script src="https://cdn.tiny.cloud/1/8vsxww83gm3jaojqw98agsmbpsp6c8xqbj7dcfwwn364gkyk/tinymce/5/tinymce.min.js" -->
-<!-- referrerpolicy="origin"></script> -->
+{% extends 'base.html' %} {% load static %} {% block title %} {% if note %} {{
+note.title }} {% else %} Create New Note {% endif %} {% endblock title%} {%
+block style %}
 <script src="{% static 'js/wangEditor.min.js' %}"></script>
-{% endblock style %}
-{% block body %}
-<div class="container">
+<style>
+  .save_time {
+    margin-left: 30px;
+  }
+</style>
+{% endblock style %} {% block body %}
+<form id="note_form">
+  {% csrf_token %}
+  <div class="container">
     <div class="row">
-        <div class="col-md-11">
-            <input type="text" class="form-control" style="background-color:transparent;border:0;" id="title"
-                placeholder="Title">
-        </div>
+      <div class="col-md-11">
+        <input
+          type="text"
+          class="form-control"
+          style="background-color: transparent; border: 0"
+          id="title"
+          placeholder="Title"
+        />
+      </div>
     </div>
-    <div class="row" style="height: 20px;">
-        <div class="col-md-8">
-        </div>
+    <div class="row" style="height: 20px">
+      <div class="col-md-8"></div>
+    </div>
+    <div class="row">
+      <div id="toolbar-container" class="toolbar col-md-11"></div>
+    </div>
+    <div class="row">
+      <div id="text-container" class="text col-md-11"></div>
+    </div>
 
+    <div class="row" style="height: 80px">
+      <div class="col-md-8"></div>
     </div>
     <div class="row">
-        <div id="toolbar-container" class="toolbar col-md-11"></div>
+      <div class="save_time">
+        <p class="text-muted">
+          <small id="save_time">save in 21/04/08{{ last_edit }}</small>
+        </p>
+      </div>
+      <div class="col-md-offset-9">
+        <button class="btn btn-primary" id="save_note">save</button>
+      </div>
     </div>
-    <div class="row">
-        <div id="text-container" class="text col-md-11"></div>
-    </div>
-
-    <div class="row" style="height: 80px;">
-        <div class="col-md-8">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-offset-9">
-            <button class="btn btn-primary" id="save_note">save</button>
-        </div>
-    </div>
-</div>
-{% endblock body %}
-
-{% block script %}
+  </div>
+</form>
+{% endblock body %} {% block script %}
 <!-- 引入 wangEditor.min.js -->
 <script type="text/javascript">
-    const E = window.wangEditor
-    const editor = new E('#toolbar-container', '#text-container');
-    editor.config.height = 400;
-    // 或者 const editor = new E( document.getElementById('div1') )
-    editor.config.showFullScreen = false;
-    editor.create();
-    {% if content %}
-    editor.txt.html(content)
-    {% endif %}
-    $(window).bind('beforeunload', function () {
-        return "Maybe have something don't save";
-    });
+    note_id = 0
+
+  function save_note(editor){
+    content = editor.txt
+    title = $("#title").val()
+    if (title === '' ) || (content === ''){
+        alert("Please fill the title or content!");
+        return 0;
+    }
+    $.ajax({
+    url: "/note/save_note",
+    data: { csrfmiddlewaretoken: '{{ csrf_token }}',"note_id": note_id, 'content': answer_list, 'title': words,  },
+    type: "post",
+    datatype: 'json',
+    success: function (result) {
+    alert(result['message']);
+    if(result['status'] == 1){
+        note_id = result['note_id']
+        last_edit = result['last_edit']
+    }
+    
+    },
+    error: function (result) {
+    }
+    })
+  }
+  const E = window.wangEditor
+  const editor = new E('#toolbar-container', '#text-container');
+  editor.config.height = 400;
+  // 或者 const editor = new E( document.getElementById('div1') )
+  editor.config.showFullScreen = false;
+  editor.create();
+  {% if content %}
+  editor.txt.html(content)
+  {% endif %}
+  {% if title %}
+  $("#title").val(title)
+  {% endif %}
+  $(window).bind('beforeunload', function () {
+      return "Maybe have something don't save";
+  });
+  $("#save_note").click(save_note())
 </script>
 {% endblock script %}

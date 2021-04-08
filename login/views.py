@@ -262,10 +262,8 @@ def reset(request):
     print("*"*18)
     # fail 失败，success 成功，
     status = 'fail'
-    if request.method != "POST":
-        reset_form = ResetForm()
-        return render(request, 'login/reset.html', locals())
-    # reset_form = ResetForm(request.POST)
+    reset_form = ResetForm()
+    return render(request, 'login/reset.html', locals())
     # if not reset_form.is_valid():
     #     message = '请检查输入'
     #     return render(request, 'login/reset.html', locals())
