@@ -51,6 +51,11 @@ block style %}
 <!-- 引入 wangEditor.min.js -->
 <script type="text/javascript">
     note_id = 0
+    url = location.href
+    url_li = url.split('/')
+    if (typeof(url_li[url_li.length - 2] != 'note'){
+        note_id = url_li[url_li.length - 2]
+    } 
 
   function save_note(editor){
     content = editor.txt
