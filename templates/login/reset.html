@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %} 重置密码 {% endblock title%}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class='form-group col-md-3 col-xs-8 col-md-offset-4 col-xs-offset-2' style="margin-top: 60px;">
+            <form id="r_form">
+                {% csrf_token %}
+                <div></div>
+                <div class="alert hidden" role="alert" id='message_alert'></div>
+
+                <h4 class="text-center">重置密码</h3>
+                    <div class="form-group">
+                        <label for="id_p1">新密码:</label> <input type="password" name="password2" class="form-control"
+                            placeholder="new_password" maxlength="256" required id="id_p1">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_p2">确认密码:</label> <input type="password" name="password2" class="form-control"
+                            placeholder="new_password" maxlength="256" required id="id_p2">
+                    </div>
+                    <div class="form-group hidden">
+                        {{ reset_form.password1.label_tag }} {{ reset_form.password1 }}
+                    </div>
+                    <div class="form-group hidden">
+                        {{ reset_form.password2.label_tag }} {{ reset_form.password2 }}
+                    </div>
+                    <div class="hidden">
+                        {{ reset_form.code.label_tag }} {{ reset_form.code}}
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#resetModal">
+                            reset
+                        </button>
+                        <div class="modal fade" id="resetModal" tabindex="-1" role="dialog"
+                            aria-labelledby="resetModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title" id="resetModalLabel">确定</h4>
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                            &times;
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">是否要重置密码？</div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel">
+                                            取消
+                                        </button>
+                                        <button type="button" class="btn btn-primary" id="ajax_submit">确定</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </form>
+        </div>
+    </div>
+    {% endblock body %}
+
+    {% block script %}
+    <script>
+        function set_code() {
+            search_str = window.location.search;
+            code_list = search_str.split('=');
+            if (code_list.length === 2) {
+                $('#id_code').val(code_list[1]);
+            }
+            else {
+                $('#id_code').val('None');
+            }
+        }
+        set_code();
+
+        $(document).ready(
+            $(function () {
+                $('#id_p1').on('input propertychange', function () {
+                    $('#id_password1').val($('#id_p1').val());
+                })
+                $('#id_p2').on('input propertychange', function () {
+                    $('#id_password2').val($('#id_p2').val());
+                })
+                $("#ajax_submit").click(function () {
+                    // alert("SOMETHING")
+                    $('#cancel').click()
+                    $('#cancel').click()
+                    $.ajax({
+                        url: "/ajax_reset",
+                        data: $("#r_form").serialize(),
+                        type: "post",
+                        datatype: 'json',
+                        success: function (result) {
+                            console.log(result['status'])
+                            if (result['status'] === 0) {
+                                // alert()
+                                $('#message_alert').removeClass('hidden');
+                                $('#message_alert').addClass('alert-warning');
+                                $('#message_alert').html(result['message']);
+                            }
+                            else {
+                                $('#message_alert').removeClass('hidden');
+                                $('#message_alert').removeClass('alert-warning');
+                                $('#message_alert').addClass('alert-success');
+                                $('#message_alert').text(result['message']);
+                            }
+                        },
+                        error: function (result) {
+                            $('#message_alert').removeClass('hidden');
+                            $('#message_alert').addClass('alert-warning');
+                            $('#message_alert').text("也许是网络问题？");
+                        }
+                    })
+
+                })
+            })
+        );
+        // $('#reset_pwd_form').submit(function(){
+        //     parent.layer.close(index);
+        //     $.ajax({
+        //         type: "POST",
+        //         dataType: "json",
+        //         url: "/ajax_reset",
+        //         data: $("#reset_pwd_form").serialize(),
+        //         success: function(result){
+        //             alert(result)
+        //         },
+        //         error: function() {
+        //             alert("异常")
+        //         }
+        //     })
+        // });
+    </script>
+    {% endblock script %}

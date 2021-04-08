@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} {{ note.title }} {% endblock title%}
+{% block style %}
+<!-- <script src="https://cdn.tiny.cloud/1/8vsxww83gm3jaojqw98agsmbpsp6c8xqbj7dcfwwn364gkyk/tinymce/5/tinymce.min.js" -->
+<!-- referrerpolicy="origin"></script> -->
+<script src="{% static 'js/wangEditor.min.js' %}"></script>
+{% endblock style %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-11">
+            <input type="text" class="form-control" style="background-color:transparent;border:0;" id="title"
+                placeholder="Title">
+        </div>
+    </div>
+    <div class="row" style="height: 20px;">
+        <div class="col-md-8">
+        </div>
+
+    </div>
+    <div class="row">
+        <div id="toolbar-container" class="toolbar col-md-11"></div>
+    </div>
+    <div class="row">
+        <div id="text-container" class="text col-md-11"></div>
+    </div>
+
+    <div class="row" style="height: 80px;">
+        <div class="col-md-8">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-offset-9">
+            <button class="btn btn-primary" id="save_note">save</button>
+        </div>
+    </div>
+</div>
+{% endblock body %}
+
+{% block script %}
+<!-- 引入 wangEditor.min.js -->
+<script type="text/javascript">
+    const E = window.wangEditor
+    const editor = new E('#toolbar-container', '#text-container');
+    editor.config.height = 400;
+    // 或者 const editor = new E( document.getElementById('div1') )
+    editor.config.showFullScreen = false;
+    editor.create();
+    {% if content %}
+    editor.txt.html(content)
+    {% endif %}
+    $(window).bind('beforeunload', function () {
+        return "Maybe have something don't save";
+    });
+</script>
+{% endblock script %}

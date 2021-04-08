@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %} {{ note.title }} {% endblock title%}
+{% block body %}
+<div class="container">
+    <div class="row">
+
+        <div class='col-md-8'>
+            <!-- 获取标题 -->
+            <h3>如何评价漫画《进击的巨人》第 139 话（最终话）？{{ note.title }}</h3>
+            <hr>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="media">
+            <div class="media-left">
+                <a href="/user/{{ username }}" id="username">
+                    <img class="media-object img-circle" id="dy_sm_avatar" src="/media/img/renge.jpg" alt="renge"
+                        style="max-width: 40px;">
+                </a>
+            </div>
+            <div class="media-body">
+                <h5 class="media-heading"><strong>{{ nickname }} 莲华</strong></h5>
+                <p id="dynamics_doing" class="text-muted">喵帕斯~</p>
+            </div>
+            {% if this_user %}
+            <div class="media-right">
+                <a href="/note/{{ note_id }}/{{ edit }}" class="btn">edit</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <hr>
+        祖奶奶，整到最后既不是奴隶的觉醒和反抗，也不是自由和解脱，居然是他妈的爱情，还是对迫害自己的奴隶主的爱情。合着她自己想开了自己就走了。你们艾尔迪亚人2000多年来没有一对更阳间点的爱情能让祖奶奶想开的吗？
+        {{ content|safe }}
+        <hr>
+        <br>
+        {% if change %}
+        <p class="text-muted">{{ note.c_date }} change by
+            renge{{ user_detail.nickname }}</p>
+        {% else %}
+        <p class="text-muted">{{ note.c_date }} create by
+            renge{{ user_detail.nickname }}
+        </p>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        <div class="col-md-offset-6">
+            <span class="glyphicon glyphicon-heart"></span>
+        </div>
+    </div>
+</div>
+{% endblock body %}

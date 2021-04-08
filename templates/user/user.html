@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{{ username }} - 悠哉
+{% endblock title %}
+
+
+<!-- {% block login %} -->
+<!-- {% if login %}
+<a class="nav-link js-scroll-trigger" href="/logout">logout</a>
+{% else %}
+<a class="nav-link js-scroll-trigger" href="/login">login</a>
+{% endif %} -->
+
+<!-- {% endblock login %} -->
+
+
+{% block body %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-2 col-sm-4 col-xs-4">
+            <img src="/media/{{avatar}}" alt="" class="img-responsive img-thumbnail" alt="background">
+        </div>
+        <div class="col-md-7 col-sm-8">
+            <h3>{{ user_detail.nickname }} <small> {{ user_detail.sign }} </small></h3>
+            <p>
+                <a href="/user/select_word">
+                    <span class="label label-default"><span class="glyphicon glyphicon-book"></span>&nbsp;
+                    {{ word_type }}
+                    </span>
+                </a>
+                &nbsp;
+                <span class="label label-default"><span class="glyphicon glyphicon-heart-empty"> </span>
+                    18</span>
+            </p>
+
+        </div>
+        <div class="col-md-offset-8 btn">
+            <a href="edit" class="btn btn-link"> Edit Profile</a>
+        </div>
+    </div>
+
+    <div>
+        <hr>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 col-xs-7">
+            <div>
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab"
+                            data-toggle="tab">Dynamics</a></li>
+                    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab"
+                            data-toggle="tab">Check</a></li>
+                    <li role="presentation"><a href="#messages" aria-controls="messages" role="tab"
+                            data-toggle="tab">Note</a></li>
+                    <li role="presentation"><a href="#settings" aria-controls="settings" role="tab"
+                            data-toggle="tab">Settings</a></li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="home">
+                        <ul class="list-group">
+                        {% for dynamics in dynamicses %}
+                            <li class="list-group-item">
+                                <div class="media">
+                                    <div class="media-left">
+                                        <a href="/user/" id="dy_username">
+                                            <img class="media-object img-circle" id="dy_sm_avatar"
+                                                src="/media/{{ avatar }}" alt="renge" style="max-width: 25px;">
+                                        </a>
+                                    </div>
+                                    <div class="media-body">
+                                    {% if dynamics.type == 'C' %}
+                                        <h4 class="media-heading"><small id="dynamics_title">create a check</small></h4>
+                                    {% elif dynamics.type == 'F' %}
+                                        <h4 class="media-heading"><small id="dynamics_title">finish a check</small></h4>
+                                    {% elif dynamics.type == 'N' %}
+                                        <h4 class="media-heading"><small id="dynamics_title">create a note</small></h4>
+                                    {% elif dynamics.type == 'O' %}
+                                        <h4 class="media-heading"><small id="dynamics_title">do</small></h4>
+                                    {% endif %}
+                                        <p id="dynamics_doing">{{ dynamics.doing }}</p>
+                                    </div>
+                                    <div class="media-right">
+                                    {% if dynamics.target_id != 1000 %}
+                                        <a href="/check/{{ dynamics.target_id }}/detail" class="btn">detail</a>
+                                    {% endif %}
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                            <li class="list-group-item">
+                                <div class="media">
+                                    <div class="media-left">
+                                        <a href="/user/">
+                                            <img class="media-object img-rounded" src="/media/img/renge.jpg" alt="renge"
+                                                style="max-width: 25px;">
+                                        </a>
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="media-heading"><small>create a note</small></h4>
+                                        <p>Whatever is worth doing is worth doing well.
+                                        </p>
+                                        <p>任何值得做的，就把它做好。</p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        {% comment %} <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <li>
+                                    <a href="#" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                {% for num in dynamicses.paginator.page_range %}
+                                <li><a href="">{{num}}</a></li>
+                                {% endfor %}
+                                <li>
+                                    <a href="#" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                            </li>
+                            </nav> {% endcomment %}
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="profile">
+                        <ul class="list-group">
+                        {% for check in checks%}
+                            <li class="list-group-item">
+                                <div class="media">
+                                    <div class="media-left">
+                                        <a href="/user/" id="">
+                                            <img class="media-object img-circle" id=""
+                                                src="/media/{{ avatar }}" alt="renge" style="max-width: 25px;">
+                                        </a>
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="media-heading"><small id="dynamics_title"> check</small></h4>
+                                        <p id="">{{ check.num }} word</p>
+                                    </div>
+                                    <div class="media-right">
+                                        <a href="/check/{{ check.id }}/detail" class="btn">detail</a>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="messages">
+                        <ul class="list-group">
+                            <li class="list-group-item">pass</li>
+                            <li class="list-group-item">pass</li>
+                        </ul>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="settings">...</div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="col-md-3 col-xs-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Personal Achievement</h3>
+                </div>
+                <div class="panel-body">
+                more than 80% user.
+                </div>
+                <ul class="list-group">
+                    <li class="list-group-item">Word Count <span class="badge">{{ word_num }}</span></li>
+                    <li class="list-group-item">Note num <span class="badge">{{ note_num}}</span></li>
+                    <li class="list-group-item">Check Num <span class="badge">{{ check_num }}</span></li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock body %}
+
+{% block script %}
+<script>
+</script>
+{% endblock script %}

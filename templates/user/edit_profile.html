@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{{ username }} - 编辑资料
+{% endblock title %}
+
+
+<!-- {% block login %}
+
+{% endblock login %} -->
+{% block style %}
+<!-- <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-fileinput/5.1.5/css/fileinput-rtl.min.css" rel="stylesheet"> -->
+{% endblock style %}
+
+{% block body %}
+<div class="container">
+    <form action="" id="edit_form" class="form-horizontal">
+        {% csrf_token %}
+        <div class="form-group">
+            <div id="previewDiv" class=" col-sm-2">
+                <img src="" alt="预览" id="previewImg" class="img-thumbnail img-responsive ">
+                <!--进度条-->
+                <div id="progress" style="color: black"></div>
+
+            </div>
+            <div class="col-md-10 col-md-3">
+                <!-- <input type="file" name="avatar_img" id="upload_img" accept="image/png, image/jpeg" class="" value=""> -->
+                <input type="button" id="chooseImg" value="choose" class="btn btn-info btn-sm">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_nickname" class="col-sm-2  control-label">Nickname</label>
+            <div class="col-sm-10 col-md-3">
+                <input type="text" class="form-control" name="nickname" class="form-control" placeholder="Nickname"
+                    maxlength="128" required id="id_nickname">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_sign" class="col-sm-2 control-label">Sign</label>
+            <div class="col-sm-10 col-md-3">
+                <textarea class="form-control" required id="id_sign" name="sign" placeholder="Sign" rows="3"></textarea>
+                <!-- <input type="text" class="form-control" name="sign" class="form-control" placeholder="Sign" -->
+                    <!-- maxlength="128" required id="id_sign"> -->
+                <!-- <textarea name="sign" id="id_sign_area" cols="40" class="textarea" rows="2"></textarea> -->
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="id_sex_0" class="col-sm-2 control-label">Gender:</label>
+            <div class="col-sm-10 col-md-3">
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="radio_sex" id="id_male" value="male">
+                        male
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="radio_sex" id="id_female" value="female">
+                        female
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="radio_sex" id="id_other" value="other">
+                        other
+                    </label>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <label for="id_birthday" class="col-sm-2 control-label">birthday: </label>
+            <div class="col-sm-10 col-md-3">
+                <input type="date" name="birthday" class="form-control" required id="id_birthday">
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-md-offset-2 col-sm-10">
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#ConfirmModal">Save</button>
+            </div>
+        </div>
+
+        <div class="form-group hidden">
+            <!-- <input type="file" name="test" id=""> -->
+            <input type="file" id="selectImg" name="img_file">
+            <input type="hidden" name="imgId">
+        </div>
+        <div class="modal fade" id="ConfirmModal" tabindex="-1" role="dialog" aria-labelledby="ConfirmModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="resetModalLabel">confirm</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            &times;
+                        </button>
+                    </div>
+                    <div class="modal-body">Confirm the change? </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="change_cancel">
+                            No
+                        </button>
+                        <button type="button" class="btn btn-primary" id="change_submit">Yes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+{% endblock body %}
+
+{% block script %}
+<!-- <scriptsrc="https://cdn.bootcdn.net/ajax/libs/bootstrap-fileinput/5.1.5/js/fileinput.js"></script> -->
+<script>
+    function set_info() {
+        $.ajax({
+            url: "/user/ajax_get_user",
+            data: {},
+            type: "get",
+            datatype: 'json',
+            success: function (result) {
+                if (result['status'] === 0) {
+                    alert(result['message']);
+                }
+                else if (result['status'] === -1) {
+                    // $("#unlogin_li").removeClass('hidden');
+                    // $("#login_li").addClass('hidden');
+                    // $("#avatar_img").attr('src', '/media/img/default.jpg');
+                }
+                else {
+                    $("#id_nickname").attr("value", result["nickname"]);
+                    $("#id_sign").text(result["sign"]);
+                    $("#id_birthday").attr("value", result["birthday"]);
+                    $("#previewImg").attr('src', '/media/' + result['avatar']);
+                    sex = result['sex']
+                    if (sex === 'male') {
+                        $('#id_male').prop('checked', 'checked')
+                    }
+                    else if (sex === 'female') {
+                        $('#id_female').prop('checked', 'checked')
+                    }
+                    else {
+                        $('#id_other').attr('checked', true)
+                    }
+                }
+            },
+            error: function (result) {
+            }
+        })
+    }
+
+    set_info();
+    function preview(imgobj, previewImgId, previewDivId) {
+        var accept = /^(.+)\.(jpg||jpeg||png||gif)$/g;
+        var browserVersion = window.navigator.userAgent.toLowerCase();
+        if (accept.test(imgobj.value)) {
+            //上传为可接受图片格式
+            if (imgobj.files) {
+                //上传了图片文件
+                if (window.FileReader) {//html5实现文件上传,兼容ie10及以上 chrome，ff7+
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        $("#previewImg").attr("src", this.result);
+                    }
+                    reader.readAsDataURL(imgobj.files[0]);
+                    //将文件以data：url形式读取，写入到result属性中，没有返回值
+                    // reader.onprogress = function(e) { 
+                    //  document.getElementById("progress").textContent = (e.loaded/imgobj.files[0].size).toFixed(2)*100+"%"; 
+                    //  }
+                }
+            }
+            else if (browserVersion.indexOf("firefox") > -1) {
+                //不支持html5；兼容低版本火狐浏览器
+                $("#previewImg").attr("src", imgobj.files[0].getAsDataURL());
+
+            }
+            else if (browserVersion.indexOf("msie") > -1) {
+                //ie浏览器
+                if (browserVersion.indexOf("msie 6") > -1) {
+                    //兼容ie6
+                    $("#previewImg").attr("src", imgobj.value);
+                }
+                else {
+                    //ie[7-9]因为该版本浏览器处于安全性考虑，屏蔽了上传文件的真是本地地址，使用以下获取真实地址
+                    //在ie中使用滤镜进行预览图片，
+                    imgobj.select();
+                    if (browserVersion.indexOf("msie 9") > -1) {
+                        //ie9中必须将焦点从文本域移开，否则拒绝document.selection.createRange().text
+                        $("#previewImg").focus();
+                        //如果上传控件在框架中，imgobj.blur并不能达到目的，所以可以将任意元素聚焦来达到目的。
+                    }
+                }
+            }
+            else {
+                document.getElementById(previewImgId).setAttribute("src", imgobj.value);
+            }
+        }
+        else {
+            alert("图片格式不符合，请选择jpg/png/gif/jpeg格式的图片");
+            imgobj.value = ""; //清空选中文件
+            if (browserVersion.indexOf("msie") > -1) {//兼容ie9及以下浏览器
+                imgobj.select();
+                document.selection.clear();
+            }
+        }
+    }
+
+    $(document).ready(
+        $(function () {
+            $("#chooseImg").click(function () {
+                $("#selectImg").click().select();
+            })
+            $("#selectImg").change(function () {
+                preview(this, $("#previewImg"), "previewDiv");
+            })
+
+            $("#upload_img").change(function () {
+                preview(this, $("#edit_avatar"), "previewDiv");
+            })
+            $("#change_submit").click(function () {
+                $('#change_cancel').click();
+                $('#change_cancel').click();
+                // console.log("LKJSLKDJL")
+                // console.log(typeof ($("#edit_form").serialize()))
+                var form_data = new FormData($("#edit_form")[0])
+                $.ajax({
+                    url: "/user/ajax_save",
+                    // data: $("#edit_form").serialize(),
+                    data: form_data,
+                    type: "post",
+                    datatype: 'json',
+                    contentType: false, //表示不处理数据
+                    processData: false,
+                    success: function (result) {
+                        console.log(result['status'])
+                        if (result['status'] === 0) {
+                        }
+                        else {
+                            setTimeout(function(){
+                            alert(result['message']);
+                            location.href = '/user/' + result['username']
+                            }, 1000)
+                        }
+                    },
+                    error: function (result) {
+                    }
+                })
+
+            })
+        })
+    )
+</script>
+
+{% endblock script %}

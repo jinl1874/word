@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Check result
+{% endblock title %}
+
+
+
+
+{% block style %}
+{% endblock style %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-11">
+            <div class="table-responsive table-hover">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</td>
+                            <th>Word</td>
+                            <th>Translate</td>
+                            <th>Result</td>
+                            <th>Correct</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for word in words %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td class="info">{{ word.word }}</td>
+                            <td class="info">{{ word.result_word }}</td>
+                            {% for tran in trans %}
+                            {% if forloop.counter == forloop.parentloop.counter %}
+                            <td class="">{{tran}}</td>
+                            {% endif %}
+                            {% endfor %}
+                            {% if word.error_or_correct %}
+                            <td class="success"><span class="glyphicon glyphicon-ok"> </span></td>
+                            {% else %}
+                            <td class="danger"><span class="glyphicon glyphicon-remove"> </span></td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>Count</td>
+                            <td class="">{{ num }}</td>
+                            <td class="">{{ num }}</td>
+                            <td class="">{{ num }}</td>
+                            <td class="">{{ score }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        </tfoot>
+        </table>
+    </div>
+</div>
+
+</div>
+</div>
+{% endblock body %}

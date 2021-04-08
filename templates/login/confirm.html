@@ -1,0 +1,27 @@
+{% extends 'login/base.html' %} 
+
+{% block title %} 注册确认 {% endblock %} 
+
+{% block body %}
+
+<div class='page-header' >
+ <h1>{{message}}</h1>
+ <p><ins id='timer'></ins> 秒后跳转至登录页</p>
+  <p><a class="btn btn-primary" href="/login/" role="button">跳转</a></p>
+</div>
+<script>
+(function() {
+    var time = 6;
+    $('#timer').text(time)
+    var set = setInterval(function() {
+        time--;
+        $('#timer').text(time);
+        if(time === 0) {
+            window.location = '/login/'
+            clearInterval(set);
+        }
+    }, 1000);
+})();
+
+</script>
+{% endblock %}

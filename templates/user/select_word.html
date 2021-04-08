@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Select Word
+{% endblock title %}
+
+
+
+{% block style %}
+{% endblock style %}
+
+{% block body %}
+<div class="container" action='/user/select'>
+    <form id="select_form">
+        <div class="row">
+            <div id="select_alert" class="hidden alert alert-warning col-md-3 col-xs-10 col-xs-offset-1 col-md-offset-3">
+            </div>
+        </div>
+        {% csrf_token %}
+        <div class="row">
+            <div class="form-group col-md-3 col-md-offset-3">
+                <label for="id_type">Type:</label>
+                <ul id="id_type" class="Radio">
+                    {% if word_type == 'cet-4' %}
+                    <li><label for="id_cet-4"><input type="radio" name="type" value="cet-4" class="Radio" required=""
+                                id="id_cet-4" checked>
+                            Cet-4</label>
+                    </li>
+                    <li><label for="id_cet-6"><input type="radio" name="type" value="cet-6" class="Radio" required=""
+                                id="id_cet-6" >
+                            Cet-6</label>
+                    </li>
+                    <li><label for="id_HS"><input type="radio" name="type" value="highschool" class="Radio" required=""
+                                id="id_H" >
+                            High School</label>
+                    </li>
+                    {% elif word_type == 'cet-6' %}
+                    <li><label for="id_cet-4"><input type="radio" name="type" value="cet-4" class="Radio" required=""
+                                id="id_cet-4" >
+                            Cet-4</label>
+                    </li>
+                    <li><label for="id_cet-6"><input type="radio" name="type" value="cet-6" class="Radio" required=""
+                                id="id_cet-6" checked>
+                            Cet-6</label>
+                    </li>
+                    <li><label for="id_HS"><input type="radio" name="type" value="highschool" class="Radio" required=""
+                                id="id_H" >
+                            High School</label>
+                    </li>
+                    {% else %}
+                    <li><label for="id_cet-4"><input type="radio" name="type" value="cet-4" class="Radio" required=""
+                                id="id_cet-4" >
+                            Cet-4</label>
+                    </li>
+                    <li><label for="id_cet-6"><input type="radio" name="type" value="cet-6" class="Radio" required=""
+                                id="id_cet-6" >
+                            Cet-6</label>
+                    </li>
+                    <li><label for="id_HS"><input type="radio" name="type" value="highschool" class="Radio" required=""
+                                id="id_H" checked>
+                            High School</label>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <button class="btn btn-default" type="button" id="save_type">save</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock body %}
+
+{% block script %}
+<script>
+
+    $(document).ready(
+        $(function () {
+            $("#save_type").click(function () {
+                $.ajax({
+                    url: "/user/select",
+                    data: $("#select_form").serialize(),
+                    type: "post",
+                    datatype: 'json',
+                    success: function (result) {
+                        console.log(result['status'])
+                        if (result['status']===0){
+                            $('#select_alert').removeClass('hidden');
+                            $('#select_alert').removeClass('alert-success');
+                            $('#select_alert').addClass('alert-warning');
+                            $('#select_alert').html(result['message']);
+                        }
+                        else{
+                            $('#select_alert').removeClass('hidden');
+                            $('#select_alert').removeClass('alert-warning');
+                            $('#select_alert').addClass('alert-success');
+                            $('#select_alert').html(result['message']);
+                        }
+                    },
+                    error: function (result) {
+                        console.log(result)
+                    }
+                })
+
+            })
+        })
+    );
+</script>
+{% endblock script %}

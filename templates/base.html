@@ -1,0 +1,196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}" />
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
+    {% block css %}
+    {% endblock css %}
+    <title>{% block title %} {% endblock title%}</title>
+    <style>
+        body {
+            padding-bottom: 70px;
+        }
+
+        .img-ava {
+            padding-top: 0px;
+            padding-bottom: 0px;
+            padding: 0%;
+            margin: 0%;
+        }
+    </style>
+    {% block style %}
+    {% endblock style %}
+</head>
+
+<body id="page-top">
+    <!-- Navigation-->
+    <nav class="navbar navbar-inverse ">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">
+                    <!-- <img src="{% static 'img/avatar.jpg' %}" alt="brand" width="25px" height="25px"> -->
+                    <!-- <span class="glyphicon glyphicon-console"></span> -->
+                    (＃°Д°)
+                </a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li class="active" id="home_li"><a href="/">
+                            <span class="glyphicon glyphicon-home"></span>
+
+                            <span class="sr-only">(current)</span></a></li>
+                    <li id="check_li"><a href="/check"><span class="glyphicon glyphicon-check"></span></a></li>
+                    <li id="bookmark_li"><a href="/bookmark"><span class="glyphicon glyphicon-bookmark"></span></a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="img-ava"><a class="navbar-brand " id="avatar_img_a" href=""><img id="avatar_img"
+                                class="Brand img-circle hidden" alt="user" src="" height="20px"></a></li>
+                    <li class="hidden" id="unlogin_li"><a href="/login"> <span class="glyphicon glyphicon-log-in">
+                                Login</span></a>
+                    </li>
+                    <!-- 加个判断语句 -->
+                    <!-- <img alt="user" class="" id="nav_avatar" src="/media/{{ avatar }}" height="15px"> -->
+                    <!-- jinl -->
+                    <!-- <button type="button" class="btn btn-default navbar-btn">Sign in</button> -->
+                    <li id="login_li" class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                            aria-expanded="false">
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-right" style="min-width: 100%;">
+                            <li><a id="user_url" href=""><span class="glyphicon glyphicon-user"> My
+                                        Page</span></a></li>
+                            <li><a href="/create"><span class="glyphicon glyphicon-pencil"> Create Note</span></a></li>
+                            <li><a href="/check/history"><span class="glyphicon glyphicon-time"> Check
+                                        History</span></a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-cog"> Setting</span></a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a data-toggle="modal" data-target="#LogoutModal"><span
+                                        class="glyphicon glyphicon-log-out"> Logout</span></a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+
+
+    <!-- <a type="button" class="btn btn-link" data-toggle="modal" data-target="#LogoutModal">Save</a> -->
+    <div class="modal fade" id="LogoutModal" tabindex="-1" role="dialog" aria-labelledby="LogoutModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="logoutModalLabel">Confirm</h4>
+                    <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button> -->
+                </div>
+                <div class="modal-body">Confirm to logout? </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel">
+                        No
+                    </button>
+                    <button type="button" onclick="window.location.href='/logout'" class="btn btn-warning"
+                        id="Logout_">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% block body%} {% endblock body %}
+    {% block foot %} {% endblock foot %}
+
+    <nav class="navbar navbar-inverse navbar-fixed-bottom">
+        <!--贴在底部，不会消失-->
+        <div class="container">
+            <div style="text-align:center; color: white; margin-top: 13px;"><small>&copy; Check 2021</small></div>
+        </div>
+    </nav>
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+    <!-- Core theme JS-->
+    <script>
+        function set_nav() {
+            url = window.location.href;
+            url_li = url.split("/");
+            if (url_li.length === 4 || url_li[3] === 'index') {
+                $('#home_li').addClass('active');
+                $('#check_li').removeClass('active');
+                $('#bookmark_li').removeClass('active');
+            }
+            else if (url_li[3] === 'check') {
+                console.log(url_li[3])
+                $('#home_li').removeClass('active');
+                $('#check_li').addClass('active');
+                $('#bookmark_li').removeClass('active');
+            }
+            else if (url_li[3] === 'bookmark') {
+                $('#home_li').removeClass('active');
+                $('#check_li').removeClass('active');
+                $('#bookmark_li').addClass('active');
+            }
+            else {
+                $('#home_li').removeClass('active');
+                $('#check_li').removeClass('active');
+                $('#bookmark_li').removeClass('active');
+            }
+        }
+        function get_avatar() {
+            $.ajax({
+                url: "/user/ajax_get_user",
+                data: {},
+                type: "get",
+                datatype: 'json',
+                success: function (result) {
+                    if (result['status'] === 0) {
+                        alert(result['message'])
+                    }
+                    else if (result['status'] === -1) {
+                        $("#unlogin_li").removeClass('hidden');
+                        $("#login_li").addClass('hidden');
+                        $("#avatar_img").removeClass("hidden");
+                        $("#avatar_img").attr('src', '/media/img/default.jpg');
+                    }
+                    else {
+                        $("#avatar_img").removeClass("hidden");
+                        $("#login_li").removeClass('hidden');
+                        $("#unlogin_li").addClass('hidden');
+                        $("#avatar_img").attr('src', '/media/' + result['avatar']);
+                        $("#avatar_img_a").attr('href', '/user/' + result['username']);
+                        // $("#avatar_img").click(function(){
+                        //     location.href = 'user/'+result['username']
+                        // })
+                        $("#user_url").attr('href', '/user/' + result['username']);
+                    }
+                },
+                error: function (result) {
+
+                }
+            })
+        }
+
+        set_nav();
+        get_avatar();
+    </script>
+    {% block script %} {% endblock script %}
+</body>
+
+</html>

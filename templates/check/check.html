@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Check
+{% endblock title %}
+
+
+
+
+{% block style %}
+<style>
+    .center-block {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+{% endblock style %}
+
+{% block body %}
+
+<button type="button" id="something_id" class="btn btn-primary hidden" data-toggle="modal" data-target="#somethingModal">Large modal</button>
+<div class="modal fade" id="somethingModal" tabindex="-1" role="dialog" aria-labelledby="somethingModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="resetModalLabel">check</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body" id="check_modal_body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="check_cancel">
+                    cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="check_certain">certain</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container ">
+    <form action="" id="type_form">
+        <div class="row">
+            <div id="type_alert" class="hidden alert alert-warning col-md-3 col-xs-10 col-xs-offset-1 col-md-offset-3">
+
+            </div>
+        </div>
+        {% csrf_token %}
+        <div class="row">
+            <div class="form-group col-md-3 col-md-offset-3">
+                <label for="id_type">Type:</label>
+                <ul id="id_type" class="Radio">
+                    <li><label for="id_random"><input type="radio" name="type" value="random" class="Radio" required=""
+                                id="id_random" checked>
+                            random</label>
+
+                    </li>
+                    <li><label for="id_first_letter"><input type="radio" name="type" value="letter" class="Radio"
+                                required="" id="id_first_letter">
+                            first_letter</label>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-4 col-md-offset-3 hidden" id="id_letter_div">
+                <label for="id_letter">First Letter:
+                    <input type="text" class="form-control " name="letter" id="id_letter" maxlength="1"
+                        oninput="this.value=this.value.replace(/[^a-zA-Z]/g,'')">
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-3 col-md-offset-3">
+                <label for="num" class="control-label">Select Num: </label>
+                <select class="form-control" id="id_num" name='num' value=10>
+                    <option id="num_10" value=10>10</option>
+                    <option id="num_20" value=20>20</option>
+                    <option id="num_30" value=30>30</option>
+                    <option id="num_40" value=40>40</option>
+                    <option id="num_50" value=50>50</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-md-offset-3">
+                <button type="button" data-toggle="modal" data-target="#selectTypeModal" class="btn btn-primary">Start</button>
+
+                <div class="modal fade" id="selectTypeModal" tabindex="-1" role="dialog" aria-labelledby="SelectTypeModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="SelectTypeModalLabel">check</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                            </div>
+                            <div class="modal-body" id="">confirm to create a new check?</div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal" id="word_type_num_cancel">
+                                    cancel
+                                </button>
+                                <button type="button" class="btn btn-primary" id="word_type_num">certain</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock body %}
+
+{% block script %}
+<script>
+    $(document).ready(
+        $(function () {
+            {% if message %}
+            $('#check_modal_body').text("{{ message }}");
+            $('#something_id').click();
+            {% comment %} $('#somethingModal').modal('toggle'); {% endcomment %}
+            $('#check_certain').click(function(){
+                location.href="/check/" + {{ check_id }} + ""
+            })
+            {% endif %}
+
+            $("#id_first_letter").click(function () {
+                $("#id_letter_div").removeClass("hidden");
+                $("#id_letter").val('');
+            });
+
+            $("#id_random").click(function () {
+                $("#id_letter_div").addClass("hidden")
+                $("#id_letter").val('a');
+            });
+            $("#word_type_num").click(function () {
+                $.ajax({
+                    url: "ajax_type",
+                    data: $("#type_form").serialize(),
+                    type: "post",
+                    datatype: 'json',
+                    success: function (result) {
+                        console.log(result['status'])
+                        if (result['status'] === 0) {
+                            $('#type_alert').removeClass('hidden');
+                            $('#type_alert').html(result['message']);
+                        }
+                        else {
+                            $('#word_type_num_cancel').click()
+                            $('#word_type_num_cancel').click()
+                            $('#check_modal_body').text('Create success, Check now? ');
+                            $('#something_id').click();
+                            $('#check_certain').click(function(){
+                                location.href=result['url']
+                            })
+                        }
+
+                    },
+                    error: function (result) {
+                    }
+                })
+
+            })
+        })
+
+    );
+</script>
+{% endblock script %}

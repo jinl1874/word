@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Check
+{% endblock title %}
+
+
+
+
+{% block style %}
+<style>
+    .center-block {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+{% endblock style %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-5 col-md-offset-3">
+            <form class="form-horizontal">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label" id="">Translation</label>
+                    <div class="col-sm-10">
+                        <input type="" readonly value="n. 放弃" class="form-control" id="word_tran" maxlength="15"
+                            placeholder="word">
+                        <!-- <p class="control-p">n. 放弃</p> -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label" id="">Word</label>
+                    <div class="col-sm-10">
+                        <input type="text" oninput="this.value=this.value.replace(/[^a-zA-Z]/g,'')" ,
+                            class="form-control" id="input_word" maxlength="15" placeholder="word"
+                            aria-describedby="inputSuccess3Status">
+                        <!-- <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                        <span id="inputSuccess3Status" class="sr-only">(success)</span> -->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-offset-2 col-sm-4 col-md-2">
+                        <button type="button" class="btn btn-info" id="prev_word">prev</button>
+                    </div>
+                    <div class="col-md-1 col-md-offset-2">
+                        <ins id="current_num">1</ins>/<ins id="word_sum">10</ins>
+                    </div>
+                    <div class="col-sm-offset-2 col-sm-4 col-md-2 col-md-offset-3">
+                        <button type="button" class="btn btn-primary" id="next_word">next</button>
+                    </div>
+                </div>
+                <div style="height: 20px;">
+                </div>
+                <div class="form-group hidden" id="save_div">
+                    <label for="" class="col-sm-2  control-label" id="">Save </label>
+                    <div class="col-sm-10">
+                        <button type="button" class="btn btn-success" id="save_submit">save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock body %}
+
+{% block script %}
+<script>
+
+    $(document).ready(
+        $(function () {
+            words_dict = {}
+            var words = [];
+            var words_tran = []
+            {% for i, j in words_dict.items %}
+            words.push('{{i}}');
+            words_tran.push('{{j}}');
+            words_dict['{{i}}'] = '{{j}}';
+            {% endfor %}
+            console.log(words);
+            console.log(words_tran);
+            console.log(words_dict);
+            length = words.length;
+            var answer_list = new Array([length]);
+            $("#current_num").text(1);
+            $("#word_sum").text(length);
+            $("#word_tran").val(words_tran[0])
+            $("#next_word").click(next_word)
+            $("#input_word").keydown(function (e) {
+                if (e.keyCode == 13) {
+                    next_word();
+                }
+            });
+            function if_over(li, num) {
+                if (li.length === num) {
+                    return true;
+                }
+                return false;
+            }
+
+            function next_word() {
+                current_num = parseInt($("#current_num").text())
+                word_sum = parseInt($("#word_sum").text())
+                if ($('#input_word').val() === '') {
+                    $("#word_status").remove();
+                    $('#input_word').after('<span id="word_status" ><small>Please input the word!</small></span>')
+                }
+                else if (word_sum === current_num) {
+                    $("#save_div").removeClass("hidden")
+                    answer_list[current_num - 1] = $("#input_word").val();
+                }
+                else {
+                    $("#word_status").remove();
+                    answer_list[current_num - 1] = $("#input_word").val();
+                    $("#current_num").text(current_num + 1);
+                    $("#word_tran").val(words_tran[current_num]);
+                    if (answer_list[current_num]) {
+                        $("#input_word").val(answer_list[current_num]);
+                    }
+                    else {
+                        $("#input_word").val('');
+                    }
+                    $("#input_word").focus()
+                }
+                console.log(answer_list)
+                if (if_over(answer_list, word_sum)) {
+                    $("#save_div").removeClass("hidden")
+                }
+            }
+            $("#prev_word").click(function () {
+                current_num = parseInt($("#current_num").text())
+                word_sum = parseInt($("#word_sum").text())
+
+                if (current_num === 1) {
+                    $("#word_status").remove();
+                    $('#input_word').after('<span id="word_status" ><small>No more previous!</small></span>')
+                } else {
+                    $("#word_status").remove();
+                    $("#current_num").text(current_num - 1);
+                    $("#word_tran").val(words_tran[current_num - 2]);
+                    answer_list[word_sum - 2] = $("#input_word").val();
+                    if (answer_list[current_num - 2]) {
+                        $("#input_word").val(answer_list[current_num - 2]);
+                    }
+                    else {
+                        $("#input_word").val('');
+                    }
+                    $("#input_word").focus()
+                }
+                if (if_over(answer_list, word_sum)) {
+                    $("#save_div").removeClass("hidden")
+                }
+            })
+            $("#save_submit").click(function () {
+                // alert("TEST");
+                jQuery.ajaxSettings.traditional = true;
+                url = location.href;
+                url_li = url.split('/');
+                check_id = url_li[url_li.length-2];
+                // alert(check_id)
+                $.ajax({
+                    url: "/check/ajax_save",
+                    data: { csrfmiddlewaretoken: '{{ csrf_token }}',"check_id": check_id, 'answer': answer_list, 'words': words,  },
+                    type: "post",
+                    datatype: 'json',
+                    success: function (result) {
+                        alert(result['message']);
+                        if(result['status'] == 1){
+                            location.href = '/index/'
+                        }
+                        
+                    },
+                    error: function (result) {
+
+                    }
+                })
+            })
+        })
+    )
+
+</script>
+{% endblock script %}

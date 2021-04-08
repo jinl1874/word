@@ -1,0 +1,38 @@
+{% extends 'base.html' %} {% block title %} This is a buff page{% endblock title %} 
+{% block body %}
+<div class="container">
+  <div class="row">
+    <div class="jumbotron">
+      <h1>{{message}}</h1>
+      {% if url %}
+      <p>After <ins id="timer"></ins> secods jump to other page.</p>
+      <p><a class="btn btn-primary" href="{{ url }}" role="button">跳转</a></p>
+      {% else %}
+      <p>After <ins id="timer"></ins> seconds jump to home</p>
+      <p><a class="btn btn-primary" href="/index/" role="button">jump</a></p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock body %} 
+{% block script %}
+<script>
+    alert(1);
+    (function() {
+        var time = 6;
+        $('#timer').text(time);
+        var set = setInterval(function() {
+        time--;
+        $('#timer').text(time);
+        if(time === 0) {
+            {% if url %}
+            window.location.href = '{{ url }}'
+            {% else %}
+            window.location.href = '/home/'
+            {% endif %}
+            clearInterval(set);
+        }
+      }, 1000);
+  })();
+</script>
+{% endblock script %}
